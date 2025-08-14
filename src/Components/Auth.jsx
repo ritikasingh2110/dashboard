@@ -1,12 +1,58 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { saveAdmin, getAllAdmins } from "../firebase/helpers/firestoreHelpers";
 
 export default function Auth({ type }) {
   const navigate = useNavigate();
   const isLogin = type === "login";
 
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: ""
+  });
+
+  const handleChange = (e) => {
+    setFormData(prev => ({
+      ...prev,
+      [e.target.name]: e.target.value
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  try {
+    if (!isLogin) {
+      await saveAdmin(formData);
+      alert("Admin registered! Please Signin Using Your Credentials");
+      navigate("/");
+    } else {
+      const admins = await getAllAdmins();
+      const match = admins.find(
+        (admin) =>
+          admin.email === formData.email &&
+          admin.password === formData.password
+      );
+
+      if (match) {
+        // ✅ Save adminId to localStorage
+        localStorage.setItem("adminId", match.email);
+
+        alert("Login successful!");
+        navigate("/dashboard");
+      } else {
+        alert("Invalid credentials");
+      }
+    }
+  } catch (error) {
+    console.error(error);
+    alert("Error during authentication");
+  }
+};
+
   return (
     <div className="min-h-screen flex">
-      {/* Left panel (hidden on small screens) */}
       <div className="hidden md:flex flex-col justify-center items-center w-1/2 bg-blue-600 text-white p-10">
         <h1 className="text-4xl font-bold mb-4">Admin Dashboard</h1>
         <p className="text-lg text-center max-w-sm">
@@ -14,14 +60,8 @@ export default function Auth({ type }) {
             ? "Access your dashboard with ease and security."
             : "Create an account to start managing your work efficiently."}
         </p>
-        {/* <img
-          src="https://illustrations.popsy.co/gray/dashboard.svg"
-          alt="Auth Illustration"
-          className="w-80 mt-10"
-        /> */}
       </div>
 
-      {/* Right panel (form) */}
       <div className="w-full md:w-1/2 bg-white flex items-center justify-center p-6 sm:p-12">
         <div className="w-full max-w-md">
           <h2 className="text-2xl sm:text-3xl font-bold text-slate-800 text-center mb-2">
@@ -31,13 +71,7 @@ export default function Auth({ type }) {
             {isLogin ? "Please sign in to continue" : "Sign up to get started"}
           </p>
 
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              navigate("/dashboard");
-            }}
-            className="space-y-5"
-          >
+          <form onSubmit={handleSubmit} className="space-y-5">
             {!isLogin && (
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">
@@ -45,7 +79,9 @@ export default function Auth({ type }) {
                 </label>
                 <input
                   type="text"
+                  name="name"
                   placeholder="John Doe"
+                  onChange={handleChange}
                   required
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
@@ -58,7 +94,9 @@ export default function Auth({ type }) {
               </label>
               <input
                 type="email"
+                name="email"
                 placeholder="you@example.com"
+                onChange={handleChange}
                 required
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
@@ -70,7 +108,9 @@ export default function Auth({ type }) {
               </label>
               <input
                 type="password"
+                name="password"
                 placeholder="••••••••"
+                onChange={handleChange}
                 required
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
