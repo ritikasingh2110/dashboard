@@ -3,8 +3,8 @@ import { FaTrash, FaEye, FaSignOutAlt, FaUndo, FaSearch } from "react-icons/fa";
 import {
   getAllApplications,
   archiveApplication,
-  getAllArchivedApplications, // We'll add this in helper.js
-  restoreApplication          // We'll add this in helper.js
+  getAllArchivedApplications,
+  restoreApplication,
 } from "../firebase/helpers/firestoreHelpers";
 import { useNavigate } from "react-router-dom";
 
@@ -21,47 +21,46 @@ export default function Dashboard() {
   const navigate = useNavigate();
 
   useEffect(() => {
-  const fetchData = async () => {
-    try {
-      const email = localStorage.getItem("adminId");
-      setName(email);
+    const fetchData = async () => {
+      try {
+        const email = localStorage.getItem("adminId");
+        setName(email);
 
-      const [activeData, archivedData] = await Promise.all([
-        getAllApplications(),
-        getAllArchivedApplications()
-      ]);
+        const [activeData, archivedData] = await Promise.all([
+          getAllApplications(),
+          getAllArchivedApplications(),
+        ]);
 
-      setApplicants(activeData || []);
-      setArchivedApplicants(archivedData || []);
-    } catch (error) {
-      console.error("Failed to load dashboard:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-  fetchData();
-}, []);
-
+        setApplicants(activeData || []);
+        setArchivedApplicants(archivedData || []);
+      } catch (error) {
+        console.error("Failed to load dashboard:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
 
   const filteredApplicants = applicants.filter((a) => {
-  const name = `${a.firstName || ""} ${a.lastName || ""}`.trim();
-  const email = a.email || "";
-  
-  return (
-    name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    email.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-});
+    const name = `${a.firstName || ""} ${a.lastName || ""}`.trim();
+    const email = a.email || "";
 
-const filteredArchived = archivedApplicants.filter((a) => {
-  const name = `${a.firstName || ""} ${a.lastName || ""}`.trim();
-  const email = a.email || "";
-  
-  return (
-    name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    email.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-});
+    return (
+      name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      email.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  });
+
+  const filteredArchived = archivedApplicants.filter((a) => {
+    const name = `${a.firstName || ""} ${a.lastName || ""}`.trim();
+    const email = a.email || "";
+
+    return (
+      name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      email.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  });
 
   const totalApplications = applicants.length;
   const todayDate = new Date().toISOString().split("T")[0];
@@ -95,28 +94,26 @@ const filteredArchived = archivedApplicants.filter((a) => {
   };
 
   const handleDelete = async (index) => {
-  try {
-    const application = applicants[index];
-    await archiveApplication(application.id);
-    setApplicants((prev) => prev.filter((_, i) => i !== index));
-    setArchivedApplicants((arch) => [application, ...arch]);
-  } catch (error) {
-    console.error("Error archiving:", error);
-  }
-};
+    try {
+      const application = applicants[index];
+      await archiveApplication(application.id);
+      setApplicants((prev) => prev.filter((_, i) => i !== index));
+      setArchivedApplicants((arch) => [application, ...arch]);
+    } catch (error) {
+      console.error("Error archiving:", error);
+    }
+  };
 
   const handleRestore = async (index) => {
-  try {
-    const application = archivedApplicants[index];
-    await restoreApplication(application.id);
-    setArchivedApplicants((prev) => prev.filter((_, i) => i !== index));
-    setApplicants((act) => [application, ...act]);
-  } catch (error) {
-    console.error("Error restoring:", error);
-  }
-};
-
-  
+    try {
+      const application = archivedApplicants[index];
+      await restoreApplication(application.id);
+      setArchivedApplicants((prev) => prev.filter((_, i) => i !== index));
+      setApplicants((act) => [application, ...act]);
+    } catch (error) {
+      console.error("Error restoring:", error);
+    }
+  };
 
   if (loading) {
     return (
@@ -163,8 +160,7 @@ const filteredArchived = archivedApplicants.filter((a) => {
             </tr>
           )}
           {list.map((a, index) => {
-            
-              (a.submittedAt || a.appliedAt || "").slice(0, 10) || "-";
+            (a.submittedAt || a.appliedAt || "").slice(0, 10) || "-";
 
             return (
               <tr
@@ -172,7 +168,9 @@ const filteredArchived = archivedApplicants.filter((a) => {
                 className="border-b border-gray-200 last:border-none hover:bg-gray-100 transition font-[heebo]"
               >
                 <td className="py-3 px-4 font-[heebo]">{index + 1}</td>
-                <td className="py-3 px-4">{a.firstName} {a.lastName}</td>
+                <td className="py-3 px-4">
+                  {a.firstName} {a.lastName}
+                </td>
                 <td className="py-3 px-4 font-[heebo]">{a.email}</td>
                 <td className="py-3 px-4 font-[heebo]">{a.submissionDate}</td>
                 <td className="py-3 px-4 font-[heebo] flex items-center gap-3">
@@ -210,7 +208,7 @@ const filteredArchived = archivedApplicants.filter((a) => {
   );
 
   return (
-    <div className="min-h-screen p-6 bg-gradient-to-r from-[#EADCFB] via-[#D8C0FA] to-[#F5EBD4]">
+    <div className="min-h-screen p-6">
       {/* Header */}
       <div className="relative mb-12">
         {/* Sign Out Button - Top Right */}
@@ -225,13 +223,13 @@ const filteredArchived = archivedApplicants.filter((a) => {
         {/* Title & Greeting */}
         <div className="mb-10">
           <h1
-            className="text-white text-[42px] font-bold mb-4 leading-tight font-[jost] animated slideInDown"
+            className="text-[#6222CC] text-[42px] font-bold mb-4 leading-tight font-[jost] animated slideInDown"
             style={{ textShadow: "2px 2px 8px rgba(138, 79, 255, 0.4)" }}
           >
             Administrator Dashboard
           </h1>
 
-          <p className="text-lg text-gray-700 font-medium flex items-center gap-2 animate-fade-in">
+          <p className="font-[heebo] text-lg text-gray-700 font-medium flex items-center gap-2 animate-fade-in">
             <span className="text-green-500 text-xl">👋</span>
             Glad to see you back,{" "}
             <span className="text-blue-700 font-semibold">{name}</span>!
@@ -262,7 +260,7 @@ const filteredArchived = archivedApplicants.filter((a) => {
           ].map((item, idx) => (
             <div
               key={idx}
-              className="group flex-1 bg-white rounded-2xl shadow-lg p-6 min-w-[220px] border-l-4 transition-transform duration-300 ease-in-out hover:scale-105"
+              className="border border-1 group flex-1 bg-[#F6F4F9] rounded-2xl shadow-lg p-6 min-w-[220px] border-l-4 transition-transform duration-300 ease-in-out hover:scale-105"
               style={{ borderColor: item.color }}
             >
               <p
@@ -283,10 +281,7 @@ const filteredArchived = archivedApplicants.filter((a) => {
       </div>
 
       {/* Tabs & Search */}
-      <div
-        className="bg-white rounded-xl shadow border border-gray-200 p-4 sm:p-6 mb-8"
-        style={{ fontFamily: '"Heebo", "Jost", "Poppins", sans-serif' }}
-      >
+      <div className="bg-gradient-to-r from-[#F4EEFB] via-[#E9DDFB] to-[#FAF4EC] rounded-xl shadow border border-gray-200 p-4 sm:p-6 mb-8">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
           {/* Tabs */}
           <div className="flex flex-wrap gap-2 font-[jost] text-[15px]">
@@ -313,7 +308,7 @@ const filteredArchived = archivedApplicants.filter((a) => {
           </div>
 
           {/* Search */}
-          <div className="relative w-full sm:w-96 shadow-md shadow-gray-300 rounded-[10px]">
+          <div className="bg-[#F6F4F9] relative w-full sm:w-96 shadow-md shadow-gray-300 rounded-[10px]">
             <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-[#726D7B] w-5 h-5" />
             <input
               type="text"
@@ -360,19 +355,21 @@ const filteredArchived = archivedApplicants.filter((a) => {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 {[
                   ["firstName", "First Name"],
-                ["lastName", "Last Name"],
-                ["email", "Email"],
-                ["phone", "Mobile Number"],
-                ["address", "Address"],
-                ["experience", "Experience"],
-                ["linkedin", "LinkedIn Profile"],
-                ["portfolio", "Portfolio URL"],
-                ["position", "Position"],
-                ["referral", "Referral"],
-                ["relocate", "Willing to Relocate"],
-                ["salary", "Expected Salary"],
-                ["startDate", "Start Date"],
-                ["submissionDate", "Submission Date"],
+                  ["lastName", "Last Name"],
+                  ["email", "Email"],
+                  ["phone", "Mobile Number"],
+                  ["address", "Address"],
+                  ["resumeURL", "Resume URL"],
+                  ["experience", "Experience"],
+                  ["position", "Position Applied For"],
+                  ["linkedin", "LinkedIn Profile"],
+                  ["portfolio", "Portfolio Link"],
+                  ["relocate", "Willing to Relocate"],
+                  ["salary", "Expected Salary (LPA)"],
+                  ["startDate", "Start Date"],
+                  ["submissionDate", "Submission Date"],
+                  ["referral", "Referral"],
+                  ["additionalInfo", "Additional Information"],
                 ].map(([key, label]) => {
                   let value = formData[key];
                   if (key === "preferredLocations" || key === "jobSectors") {

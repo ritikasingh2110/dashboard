@@ -36,7 +36,6 @@ export default function Auth({ type }) {
       );
 
       if (match) {
-        // ✅ Save adminId to localStorage
         localStorage.setItem("adminId", match.email);
 
         alert("Login successful!");
@@ -53,9 +52,9 @@ export default function Auth({ type }) {
 
   return (
     <div className="min-h-screen flex">
-      <div className="hidden md:flex flex-col justify-center items-center w-1/2 bg-blue-600 text-white p-10">
-        <h1 className="text-4xl font-bold mb-4">Admin Dashboard</h1>
-        <p className="text-lg text-center max-w-sm">
+      <div className="hidden md:flex flex-col justify-center items-center w-1/2 bg-[#6222CC] text-white p-10 ">
+        <h1 className="text-5xl font-bold mb-4 font-[jost]">Admin Dashboard</h1>
+        <p className="font-[heebo] text-base text-center max-w-sm">
           {isLogin
             ? "Access your dashboard with ease and security."
             : "Create an account to start managing your work efficiently."}
@@ -64,17 +63,17 @@ export default function Auth({ type }) {
 
       <div className="w-full md:w-1/2 bg-white flex items-center justify-center p-6 sm:p-12">
         <div className="w-full max-w-md">
-          <h2 className="text-2xl sm:text-3xl font-bold text-slate-800 text-center mb-2">
+          <h2 className="font-[poppins] text-2xl sm:text-3xl font-bold text-slate-800 text-center mb-2">
             {isLogin ? "Welcome Back" : "Create Account"}
           </h2>
-          <p className="text-sm text-slate-500 text-center mb-6">
+          <p className="font-[heebo] text-sm text-slate-500 text-center mb-6">
             {isLogin ? "Please sign in to continue" : "Sign up to get started"}
           </p>
 
           <form onSubmit={handleSubmit} className="space-y-5">
             {!isLogin && (
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">
+                <label className="font-[heebo] block text-sm font-medium text-slate-700 mb-1">
                   Full Name
                 </label>
                 <input
@@ -83,13 +82,13 @@ export default function Auth({ type }) {
                   placeholder="John Doe"
                   onChange={handleChange}
                   required
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6222CC]"
                 />
               </div>
             )}
 
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">
+              <label className="font-[heebo] block text-sm font-medium text-slate-700 mb-1">
                 Email Address
               </label>
               <input
@@ -98,12 +97,12 @@ export default function Auth({ type }) {
                 placeholder="you@example.com"
                 onChange={handleChange}
                 required
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6222CC]"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">
+              <label className="font-[heebo] block text-sm font-medium text-slate-700 mb-1">
                 Password
               </label>
               <input
@@ -112,23 +111,23 @@ export default function Auth({ type }) {
                 placeholder="••••••••"
                 onChange={handleChange}
                 required
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6222CC]"
               />
             </div>
 
             <button
               type="submit"
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition"
+              className="font-[heebo] w-full bg-[#726D7B] hover:bg-[#FBA504] text-white font-semibold py-3 rounded-lg transition"
             >
               {isLogin ? "Login" : "Sign Up"}
             </button>
           </form>
 
-          <p className="mt-6 text-center text-sm text-slate-600">
+          <p className="font-[poppins] mt-6 text-center text-sm text-slate-600">
             {isLogin ? "Don’t have an account?" : "Already have an account?"}{" "}
             <span
               onClick={() => navigate(isLogin ? "/signup" : "/")}
-              className="text-blue-600 font-medium hover:underline cursor-pointer"
+              className="text-[#6222CC] font-medium hover:underline cursor-pointer"
             >
               {isLogin ? "Sign Up" : "Login"}
             </span>
