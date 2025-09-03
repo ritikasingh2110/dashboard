@@ -96,16 +96,15 @@ export default function Dashboard() {
     navigate("/create-job");
   };
 
-  const handleDelete = async (index) => {
-    try {
-      const application = applicants[index];
-      await archiveApplication(application.id);
-      setApplicants((prev) => prev.filter((_, i) => i !== index));
-      setArchivedApplicants((arch) => [application, ...arch]);
-    } catch (error) {
-      console.error("Error archiving:", error);
-    }
-  };
+  const handleDelete = async (applicant) => {
+  try {
+    await archiveApplication(applicant.id);
+    setApplicants((prev) => prev.filter((a) => a.id !== applicant.id));
+    setArchivedApplicants((arch) => [applicant, ...arch]);
+  } catch (error) {
+    console.error("Error archiving:", error);
+  }
+};
 
   const handleRestore = async (applicant) => {
   try {
