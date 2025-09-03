@@ -82,11 +82,10 @@ export default function Dashboard() {
     console.log(applicants);
   }, []);
 
-  const openViewModal = (index, isArchived = false) => {
-    setSelectedIndex(index);
-    setFormData(isArchived ? archivedApplicants[index] : applicants[index]);
-    setShowViewModal(true);
-  };
+  const openViewModal = (applicant, isArchived = false) => {
+  setFormData(applicant);
+  setShowViewModal(true);
+};
 
   const handleLogout = () => {
     localStorage.clear();
@@ -108,16 +107,17 @@ export default function Dashboard() {
     }
   };
 
-  const handleRestore = async (index) => {
-    try {
-      const application = archivedApplicants[index];
-      await restoreApplication(application.id);
-      setArchivedApplicants((prev) => prev.filter((_, i) => i !== index));
-      setApplicants((act) => [application, ...act]);
-    } catch (error) {
-      console.error("Error restoring:", error);
-    }
-  };
+  const handleRestore = async (applicant) => {
+  try {
+    await restoreApplication(applicant.id);
+    setArchivedApplicants((prev) =>
+      prev.filter((a) => a.id !== applicant.id)
+    );
+    setApplicants((act) => [applicant, ...act]);
+  } catch (error) {
+    console.error("Error restoring:", error);
+  }
+};
 
   if (loading) {
     return (
@@ -179,7 +179,7 @@ export default function Dashboard() {
                 <td className="py-3 px-4 font-[heebo]">{a.submissionDate}</td>
                 <td className="py-3 px-4 font-[heebo] flex items-center gap-3">
                   <button
-                    onClick={() => openViewModal(index, isArchived)}
+                    onClick={() => openViewModal(a, isArchived)}
                     className="p-2 rounded-lg hover:bg-slate-100 transition text-blue-600"
                     title="View"
                   >
@@ -187,7 +187,7 @@ export default function Dashboard() {
                   </button>
                   {isArchived ? (
                     <button
-                      onClick={() => handleRestore(index)}
+                      onClick={() => handleRestore(a)}
                       className="p-2 rounded-lg hover:bg-slate-100 transition text-green-600 flex items-center gap-1"
                       title="Restore"
                     >
@@ -195,7 +195,7 @@ export default function Dashboard() {
                     </button>
                   ) : (
                     <button
-                      onClick={() => handleDelete(index)}
+                      onClick={() => handleDelete(a)}
                       className="p-2 rounded-lg hover:bg-slate-100 transition text-red-600 flex items-center gap-1"
                       title="Archive"
                     >
