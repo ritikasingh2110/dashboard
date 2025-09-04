@@ -158,7 +158,6 @@ export const restoreApplication = async (id) => {
 
 
 
-
 const jobsCollection = collection(db, "jobs");
 
 // Save job

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { FaTrash, FaEye, FaSignOutAlt, FaUndo, FaSearch } from "react-icons/fa";
+import { FaTrash, FaEye, FaSignOutAlt, FaUndo, FaSearch, FaArrowRight } from "react-icons/fa";
 import {
   getAllApplications,
   archiveApplication,
@@ -90,6 +90,10 @@ export default function Dashboard() {
   const handleLogout = () => {
     localStorage.clear();
     navigate("/");
+  };
+
+  const goToNewPage = () => {
+    navigate("/create-job");
   };
 
   const handleDelete = async (applicant) => {
@@ -210,7 +214,13 @@ export default function Dashboard() {
     <div className="min-h-screen p-6">
       {/* Header */}
       <div className="relative mb-12">
-        {/* Sign Out Button - Top Right */}
+        <button
+        onClick={goToNewPage}
+        aria-label="Go to new page"
+        className="text-xs absolute top-0 right-17 flex items-center gap-2 bg-blue-600 text-white px-5 py-2.5 rounded-lg hover:bg-blue-700 shadow-md transition font-medium"
+      >
+        <FaArrowRight />Post New Job
+      </button>
         <button
           onClick={handleLogout}
           aria-label="Sign out"
