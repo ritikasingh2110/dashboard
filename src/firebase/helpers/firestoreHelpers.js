@@ -156,3 +156,25 @@ export const restoreApplication = async (id) => {
   }
 };
 
+
+
+
+const jobsCollection = collection(db, "jobs");
+
+// Save job
+export const saveJob = async (jobData) => {
+  try {
+    const docRef = await addDoc(jobsCollection, {
+      ...jobData,
+      createdAt: new Date(),
+    });
+    return docRef.id;
+  } catch (error) {
+    console.error("Error saving job:", error);
+    throw error;
+  }
+};
+
+
+
+
