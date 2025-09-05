@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { saveJob } from "../firebase/helpers/firestoreHelpers";
+import { useNavigate } from "react-router-dom";
+
 
 export default function CreateJob() {
   const jobFunctions = [
@@ -30,6 +32,7 @@ export default function CreateJob() {
   });
 
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -67,12 +70,20 @@ export default function CreateJob() {
   };
 
   return (
-    <div className="min-h-screen flex justify-center items-center bg-gradient-to-br from-slate-50 to-white p-6 font-[Poppins]">
+    <div className="min-h-screen flex justify-center items-center bg-gradient-to-r from-[#F4EEFB] via-[#E9DDFB] to-[#FAF4EC] p-6 font-[Poppins]">
       <form
         onSubmit={handleSubmit}
         className="bg-[#F6F4F9] shadow-2xl rounded-2xl p-10 w-full max-w-3xl border border-gray-300"
       >
-        <h2 className="text-3xl font-bold text-[#6222CC] mb-6 text-center font-[Jost] tracking-wide">
+        {/* Back Button */}
+        <button
+          type="button"
+          onClick={() => navigate("/dashboard")}
+          className="mb-6 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-all"
+        >
+          ⬅ Back
+        </button>
+        <h2 className="text-3xl font-bold text-[#6222CC] mb-6 text-center font-[jost] tracking-wide">
           Create New Job
         </h2>
 
