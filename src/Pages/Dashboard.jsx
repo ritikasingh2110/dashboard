@@ -93,7 +93,7 @@ export default function Dashboard() {
   };
 
   const goToNewPage = () => {
-    navigate("/create-job");
+    navigate("/job-section");
   };
 
   const handleDelete = async (applicant) => {
