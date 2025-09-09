@@ -48,7 +48,7 @@ export default function CreateJob() {
 
     try {
       const id = await saveJob(formData);
-      alert(`✅ Job created successfully! (ID: ${id})`);
+      alert(`✅ Job created successfully! (Job-ID: ${id})`);
 
       setFormData({
         title: "",

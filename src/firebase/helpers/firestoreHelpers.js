@@ -1,6 +1,6 @@
 // src/firestoreHelpers.js
 import { db } from '../firebase';
-import { collection, addDoc, getDoc, getDocs } from 'firebase/firestore';
+import { collection, getDoc, addDoc, runTransaction ,getDocs} from 'firebase/firestore';
 import { doc, deleteDoc, updateDoc, setDoc } from 'firebase/firestore';
 
 // Reference to the "jobApplications" collection
@@ -159,21 +159,45 @@ export const restoreApplication = async (id) => {
 
 
 const jobsCollection = collection(db, "jobs");
+const counterRef = doc(db, "counters", "jobCounter"); // Document that stores last used ID
 
-// Save job
+
+// Save job with unique serial 5-digit ID
 export const saveJob = async (jobData) => {
   try {
-    const docRef = await addDoc(jobsCollection, {
-      ...jobData,
-      createdAt: new Date(),
+    const newId = await runTransaction(db, async (transaction) => {
+      const counterDoc = await transaction.get(counterRef);
+
+      if (!counterDoc.exists()) {
+        throw new Error("Counter document does not exist!");
+      }
+
+      const lastId = counterDoc.data().lastId || 0;
+      let nextId = lastId + 1;
+
+      if (nextId > 99999) {
+        nextId = 1; // wrap around after 99999
+      }
+
+      // Update the counter
+      transaction.update(counterRef, { lastId: nextId });
+
+      // Create the job document
+      const jobDocRef = doc(jobsCollection); // Generate new document reference
+      transaction.set(jobDocRef, {
+        ...jobData,
+        jobId: String(nextId).padStart(5, '0'), // save as jobId, not job-id
+        createdAt: new Date()
+      });
+
+      return String(nextId).padStart(5, '0');
     });
-    return docRef.id;
+
+    return newId;
   } catch (error) {
     console.error("Error saving job:", error);
     throw error;
   }
 };
-
-
 
 
