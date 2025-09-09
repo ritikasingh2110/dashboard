@@ -78,7 +78,7 @@ export default function CreateJob() {
         {/* Back Button */}
         <button
           type="button"
-          onClick={() => navigate("/dashboard")}
+          onClick={() => navigate("/job-section")}
           className="mb-6 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-all"
         >
           ⬅ Back

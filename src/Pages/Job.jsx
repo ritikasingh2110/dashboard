@@ -96,6 +96,10 @@ export default function Job() {
     navigate("/dashboard");
   };
 
+  const goToJob = () => {
+    navigate("/create-job");
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-white">
@@ -129,6 +133,14 @@ export default function Job() {
         >
           {/* <FaArrowRight /> */}
           <span className="text-red-600">||</span>Admin dashboard
+        </button>
+        <button
+          onClick={goToJob}
+          aria-label="Go to new page"
+          className="absolute top-20 right-7.5 flex items-center gap-2 bg-transparent text-[#FBA504] py-2.5 rounded-lg  transition font-medium"
+        >
+          {/* <FaArrowRight /> */}
+          <span className="text-red-600">||</span>Post new Job 
         </button>
 
         {/* Title & Greeting */}
