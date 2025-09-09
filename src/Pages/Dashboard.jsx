@@ -215,18 +215,18 @@ export default function Dashboard() {
       {/* Header */}
       <div className="relative mb-12">
         <button
-        onClick={goToNewPage}
-        aria-label="Go to new page"
-        className="text-xs absolute top-0 right-17 flex items-center gap-2 bg-blue-600 text-white px-5 py-2.5 rounded-lg hover:bg-blue-700 shadow-md transition font-medium"
-      >
-        <FaArrowRight />Post New Job
-      </button>
-        <button
-          onClick={handleLogout}
-          aria-label="Sign out"
+        onClick={handleLogout}
+        aria-label="Sign out"
           className="absolute top-0 right-0 flex items-center gap-2 bg-red-600 text-white px-5 py-2.5 rounded-lg hover:bg-red-700 shadow-md transition font-medium"
         >
-          <FaSignOutAlt />
+        <FaSignOutAlt />
+      </button>
+        <button
+          onClick={goToNewPage}
+          aria-label="Go to new page"
+          className="absolute top-12 right-0 flex items-center gap-2 bg-transparent text-[#FBA504] py-2.5 rounded-lg  transition font-medium"
+        >
+          <span className="text-red-600">||</span>Job Portal
         </button>
 
         {/* Title & Greeting */}

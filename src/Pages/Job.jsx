@@ -6,25 +6,17 @@ import {
   FaUndo,
   FaSearch,
   FaArrowRight,
-  FaEdit, // ✅ Added missing import
+  FaEdit,
+  FaTimes,
 } from "react-icons/fa";
-import {
-  getAllApplications,
-  archiveApplication,
-  getAllArchivedApplications,
-  restoreApplication,
-} from "../firebase/helpers/firestoreHelpers";
 import { useNavigate } from "react-router-dom";
 
 export default function Job() {
-  const [applicants, setApplicants] = useState([]);
-  const [archivedApplicants, setArchivedApplicants] = useState([]);
-  const [formData, setFormData] = useState({});
   const [name, setName] = useState("");
-  const [showViewModal, setShowViewModal] = useState(false);
-  const [activeTab, setActiveTab] = useState("active");
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
+  const [showViewModal, setShowViewModal] = useState(false);
+  const [selectedJob, setSelectedJob] = useState(null);
 
   const navigate = useNavigate();
 
@@ -33,16 +25,8 @@ export default function Job() {
       try {
         const email = localStorage.getItem("adminId");
         setName(email);
-
-        const [activeData, archivedData] = await Promise.all([
-          getAllApplications(),
-          getAllArchivedApplications(),
-        ]);
-
-        setApplicants(activeData || []);
-        setArchivedApplicants(archivedData || []);
       } catch (error) {
-        console.error("Failed to load dashboard:", error);
+        console.error("Failed to load job dashboard:", error);
       } finally {
         setLoading(false);
       }
@@ -64,6 +48,36 @@ export default function Job() {
     { id: 10, title: "Testing", count: 3 },
     { id: 11, title: "Business Consulting", count: 4 },
     { id: 12, title: "Cyber Security", count: 2 },
+  ];
+  const jobs = [
+    {
+      id: 1,
+      title: "Java Developer",
+      company: "whitecircle group",
+      location: "Azad Nagar Delhi",
+      type: "Full-time",
+      salary: "4 LPA",
+      skills:
+        "Experienced in Production Network Environment of a large Heterogeneous enterprise Network infrastructure. · Handling Data Centre Network Operations with Business & Mission Critical applications · Mandatory to work in 24 / 7 shifts · Handling escalated incidents or high critical tickets · Analyzing Risk/Impact and Participating in Major Changes · Diagnose issues and resolve problems, identify incident patterns and drive for problem resolution. · ITIL process including, Incident, Change, Problem management lifecycle. Technical Skills · Palo alto certified – Firewall L1 skills · Hands On experience in Design, implementation and",
+      responsibilities:
+        "Experienced in Production Network Environment of a large Heterogeneous enterprise Network infrastructure. · Handling Data Centre Network Operations with Business & Mission Critical applications · Mandatory to work in 24 / 7 shifts · Handling escalated incidents or high critical tickets · Analyzing Risk/Impact and Participating in Major Changes · Diagnose issues and resolve problems, identify incident patterns and drive for problem resolution. · ITIL process including, Incident, Change, Problem management lifecycle. Technical Skills · Palo alto certified – Firewall L1 skills · Hands On experience in Design, implementation and",
+      description:
+        "Wipro Limited (NYSE: WIT, BSE: 507685, NSE: WIPRO) is a leading technology services and consulting company focused on building innovative solutions that address clients’ most complex digital transformation needs. Leveraging our holistic portfolio of capabilities in consulting, design, engineering, and operations, we help clients realize their boldest ambitions and build future-ready, sustainable businesses. With over 230,000 employees and business partners across 65 countries, we deliver on the promise of helping our customers, colleagues, and communities thrive in an ever-changing world. For additional information, visit us at www.wipro.com.",
+    },
+    {
+      id: 2,
+      title: "Java Developer",
+      company: "whitecircle group",
+      location: "Bhopal, Madhya Pradesh",
+      type: "Full-time",
+      salary: "4 LPA",
+      skills:
+        "Expert experience in troubleshooting of dynamic and static routing protocols like EIGRP, OSPF, BGP, HSRP, VRRP · Expert in switching technology with LAN and data center networking (Gigabit Ethernet, L2/L3 Switching, VLANs, STP, VTP etc.) are required. · DNS/DHCP/NTP and experience in operational support. · ADD on skills in scripting (python) and network automation.",
+      responsibilities:
+        "Experienced in Production Network Environment of a large Heterogeneous enterprise Network infrastructure. · Handling Data Centre Network Operations with Business & Mission Critical applications · Mandatory to work in 24 / 7 shifts · Handling escalated incidents or high critical tickets · Analyzing Risk/Impact and Participating in Major Changes · Diagnose issues and resolve problems, identify incident patterns and drive for problem resolution. · ITIL process including, Incident, Change, Problem management lifecycle. Technical Skills · Palo alto certified – Firewall L1 skills · Hands On experience in Design, implementation and troubleshooting of F",
+      description:
+        "Wipro Limited (NYSE: WIT, BSE: 507685, NSE: WIPRO) is a leading technology services and consulting company focused on building innovative solutions that address clients’ most complex digital transformation needs. Leveraging our holistic portfolio of capabilities in consulting, design, engineering, and operations, we help clients realize their boldest ambitions and build future-ready, sustainable businesses. With over 230,000 employees and business partners across 65 countries, we deliver on the promise of helping our customers, colleagues, and communities thrive in an ever-changing world. For additional information, visit us at www.wipro.com.",
+    },
   ];
 
   // Search filter
@@ -230,6 +244,10 @@ export default function Job() {
                       <button
                         className="p-2 ml-14 rounded-lg hover:bg-slate-100 text-blue-600"
                         title="View"
+                        onClick={() => {
+                          setSelectedJob(job); // set job data
+                          setShowViewModal(true); // open modal
+                        }}
                       >
                         <FaEye className="w-4 h-4" />
                       </button>
@@ -249,6 +267,116 @@ export default function Job() {
           </table>
         </div>
       </div>
+      {/* Popup Modal */}
+      {showViewModal && selectedJob && (
+        <div className="fixed inset-0 backdrop-blur-sm bg-black/40 flex items-center justify-center z-50 px-4">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-3xl overflow-hidden max-h-[90vh] flex flex-col">
+            {/* Header */}
+            <div className="px-6 py-4 flex justify-between items-center bg-gradient-to-r from-[#EADCFB] via-[#D8C0FA] to-[#F5EBD4] border border-gray-300">
+              <div>
+                <h3 className="text-2xl font-semibold text-white font-[jost]">
+                  JOB FOR :
+                </h3>
+                <p className="text-sm text-white/80">{selectedJob.title}</p>
+              </div>
+              <button
+                onClick={() => setShowViewModal(false)}
+                aria-label="Close"
+                className="bg-white/20 hover:bg-rose-400 text-white w-8 h-8 rounded-full flex items-center justify-center transition duration-200"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Body */}
+            <div className="p-6 overflow-y-auto bg-[#F6F4F9] space-y-8">
+              {jobs.map((job) => (
+                <div
+                  key={job.id}
+                  className="bg-white rounded-xl shadow-md border border-gray-200 p-6 relative"
+                >
+                  {/* Card Header */}
+                  <div className="flex justify-between items-center mb-4">
+                    <h4 className="text-lg font-semibold text-blue-700">
+                      Available Job : {job.id}
+                    </h4>
+
+                    <div className="flex gap-2">
+                      {/* Edit Button */}
+                      <button
+                        onClick={() => handleEdit(job.id)}
+                        className="p-2 rounded-lg text-blue-600 hover:bg-blue-100 transition"
+                        title="Edit Job"
+                      >
+                        <FaEdit className="w-4 h-4" />
+                      </button>
+
+                      {/* Delete Button */}
+                      <button
+                        onClick={() => handleDelete(job.id)}
+                        className="p-2 rounded-lg text-red-600 hover:bg-red-100 transition"
+                        title="Delete Job"
+                      >
+                        <FaTrash />
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Basic Info */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    {[
+                      ["title", "Job Title"],
+                      ["company", "Company"],
+                      ["location", "Location"],
+                      ["type", "Job Type"],
+                      ["salary", "Salary"],
+                    ].map(([key, label]) => (
+                      <div key={key}>
+                        <p className="text-xs font-semibold text-gray-500 mb-1 uppercase tracking-wide font-[poppins]">
+                          {label}
+                        </p>
+                        <div className="text-sm text-gray-800 bg-gray-50 rounded-md px-3 py-2 border border-gray-200 font-[heebo]">
+                          {job[key] || "-"}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Skills */}
+                  <div className="mt-6">
+                    <p className="text-xs font-semibold text-gray-500 mb-1 uppercase tracking-wide font-[poppins]">
+                      Skills
+                    </p>
+                    <div className="text-sm text-gray-800 bg-gray-50 rounded-md px-3 py-2 border border-gray-200 whitespace-pre-line font-[heebo]">
+                      {job.skills || "-"}
+                    </div>
+                  </div>
+
+                  {/* Responsibilities */}
+                  <div className="mt-6">
+                    <p className="text-xs font-semibold text-gray-500 mb-1 uppercase tracking-wide font-[poppins]">
+                      Responsibilities
+                    </p>
+                    <div className="text-sm text-gray-800 bg-gray-50 rounded-md px-3 py-2 border border-gray-200 whitespace-pre-line font-[heebo]">
+                      {job.responsibilities || "-"}
+                    </div>
+                  </div>
+
+                  {/* Description */}
+                  <div className="mt-6">
+                    <p className="text-xs font-semibold text-gray-500 mb-1 uppercase tracking-wide font-[poppins]">
+                      Description
+                    </p>
+                    <div className="text-sm text-gray-800 bg-gray-50 rounded-md px-3 py-2 border border-gray-200 whitespace-pre-line font-[heebo]">
+                      {job.description || "-"}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
