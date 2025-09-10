@@ -18,6 +18,7 @@ export default function Dashboard() {
   const [activeTab, setActiveTab] = useState("active");
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
+  const [showLogoutModal, setShowLogoutModal] = useState(false); // ✅ Added logout modal state
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -83,9 +84,9 @@ export default function Dashboard() {
   }, []);
 
   const openViewModal = (applicant, isArchived = false) => {
-  setFormData(applicant);
-  setShowViewModal(true);
-};
+    setFormData(applicant);
+    setShowViewModal(true);
+  };
 
   const handleLogout = () => {
     localStorage.clear();
@@ -93,30 +94,30 @@ export default function Dashboard() {
   };
 
   const goToNewPage = () => {
-    navigate("/create-job");
+    navigate("/job-section");
   };
 
   const handleDelete = async (applicant) => {
-  try {
-    await archiveApplication(applicant.id);
-    setApplicants((prev) => prev.filter((a) => a.id !== applicant.id));
-    setArchivedApplicants((arch) => [applicant, ...arch]);
-  } catch (error) {
-    console.error("Error archiving:", error);
-  }
-};
+    try {
+      await archiveApplication(applicant.id);
+      setApplicants((prev) => prev.filter((a) => a.id !== applicant.id));
+      setArchivedApplicants((arch) => [applicant, ...arch]);
+    } catch (error) {
+      console.error("Error archiving:", error);
+    }
+  };
 
   const handleRestore = async (applicant) => {
-  try {
-    await restoreApplication(applicant.id);
-    setArchivedApplicants((prev) =>
-      prev.filter((a) => a.id !== applicant.id)
-    );
-    setApplicants((act) => [applicant, ...act]);
-  } catch (error) {
-    console.error("Error restoring:", error);
-  }
-};
+    try {
+      await restoreApplication(applicant.id);
+      setArchivedApplicants((prev) =>
+        prev.filter((a) => a.id !== applicant.id)
+      );
+      setApplicants((act) => [applicant, ...act]);
+    } catch (error) {
+      console.error("Error restoring:", error);
+    }
+  };
 
   if (loading) {
     return (
@@ -214,19 +215,21 @@ export default function Dashboard() {
     <div className="min-h-screen p-6">
       {/* Header */}
       <div className="relative mb-12">
+        {/* ✅ Updated Logout Button */}
         <button
-        onClick={goToNewPage}
-        aria-label="Go to new page"
-        className="text-xs absolute top-0 right-17 flex items-center gap-2 bg-blue-600 text-white px-5 py-2.5 rounded-lg hover:bg-blue-700 shadow-md transition font-medium"
-      >
-        <FaArrowRight />Post New Job
-      </button>
-        <button
-          onClick={handleLogout}
+          onClick={() => setShowLogoutModal(true)}
           aria-label="Sign out"
           className="absolute top-0 right-0 flex items-center gap-2 bg-red-600 text-white px-5 py-2.5 rounded-lg hover:bg-red-700 shadow-md transition font-medium"
         >
           <FaSignOutAlt />
+        </button>
+
+        <button
+          onClick={goToNewPage}
+          aria-label="Go to new page"
+          className="absolute top-12 right-0 flex items-center gap-2 bg-transparent text-[#FBA504] py-2.5 rounded-lg transition font-medium"
+        >
+          <span className="text-red-600">||</span>Job Portal
         </button>
 
         {/* Title & Greeting */}
@@ -340,7 +343,6 @@ export default function Dashboard() {
       {showViewModal && (
         <div className="fixed inset-0 backdrop-blur-sm bg-black/40 flex items-center justify-center z-50 px-4">
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-3xl overflow-hidden max-h-[90vh] flex flex-col">
-            {/* Header */}
             <div className="px-6 py-4 flex justify-between items-center bg-gradient-to-r from-[#EADCFB] via-[#D8C0FA] to-[#F5EBD4] border border-gray-300">
               <div>
                 <h3 className="text-2xl font-semibold text-white font-[jost]">
@@ -358,8 +360,6 @@ export default function Dashboard() {
                 ✕
               </button>
             </div>
-
-            {/* Body */}
             <div className="p-6 overflow-y-auto bg-[#F6F4F9]">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 {[
@@ -417,6 +417,30 @@ export default function Dashboard() {
                   );
                 })}
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ✅ Logout Confirmation Modal */}
+      {showLogoutModal && (
+        <div className="fixed inset-0 backdrop-blur-sm bg-black/40 flex items-center justify-center z-50 px-4">
+          <div className="bg-white rounded-xl shadow-2xl w-full max-w-md p-6 space-y-4">
+            <h3 className="text-xl font-semibold text-gray-700">Confirm Logout</h3>
+            <p className="text-gray-600">Are you sure you want to log out?</p>
+            <div className="flex justify-end gap-4">
+              <button
+                onClick={() => setShowLogoutModal(false)}
+                className="px-4 py-2 rounded-lg border border-gray-300 hover:bg-gray-100 text-gray-700 transition"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleLogout}
+                className="px-4 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white transition"
+              >
+                Logout
+              </button>
             </div>
           </div>
         </div>
