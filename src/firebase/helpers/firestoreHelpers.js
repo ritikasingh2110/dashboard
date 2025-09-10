@@ -1,7 +1,7 @@
 // src/firestoreHelpers.js
 import { db } from '../firebase';
-import { collection, addDoc, getDoc, getDocs } from 'firebase/firestore';
-import { doc, deleteDoc, updateDoc, setDoc } from 'firebase/firestore';
+import { collection, getDoc, addDoc, runTransaction ,getDocs} from 'firebase/firestore';
+import { doc, deleteDoc, updateDoc, setDoc ,query , where} from 'firebase/firestore';
 
 // Reference to the "jobApplications" collection
 const jobCollection = collection(db, 'jobApplications');
@@ -159,15 +159,41 @@ export const restoreApplication = async (id) => {
 
 
 const jobsCollection = collection(db, "jobs");
+const counterRef = doc(db, "counters", "jobCounter"); // Document that stores last used ID
 
-// Save job
+
+// Save job with unique serial 5-digit ID
 export const saveJob = async (jobData) => {
   try {
-    const docRef = await addDoc(jobsCollection, {
-      ...jobData,
-      createdAt: new Date(),
+    const newId = await runTransaction(db, async (transaction) => {
+      const counterDoc = await transaction.get(counterRef);
+
+      if (!counterDoc.exists()) {
+        throw new Error("Counter document does not exist!");
+      }
+
+      const lastId = counterDoc.data().lastId || 0;
+      let nextId = lastId + 1;
+
+      if (nextId > 99999) {
+        nextId = 1; // wrap around after 99999
+      }
+
+      // Update the counter
+      transaction.update(counterRef, { lastId: nextId });
+
+      // Create the job document
+      const jobDocRef = doc(jobsCollection); 
+      transaction.set(jobDocRef, {
+        ...jobData,
+        jobId: String(nextId).padStart(5, '0'),
+        createdAt: new Date()
+      });
+
+      return String(nextId).padStart(5, '0');
     });
-    return docRef.id;
+
+    return newId;
   } catch (error) {
     console.error("Error saving job:", error);
     throw error;
@@ -175,5 +201,87 @@ export const saveJob = async (jobData) => {
 };
 
 
+// Fetch all jobs from 'jobs' collection
+export const getAllJobs = async () => {
+  try {
+    const jobsCollection = collection(db, "jobs");
+    const snapshot = await getDocs(jobsCollection);
+    return snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+  } catch (error) {
+    console.error("Error fetching jobs:", error);
+    return [];
+  }
+};
+
+
+// ✅ Find a job document by jobId
+const getJobDocByJobId = async (jobId) => {
+  try {
+    const q = query(jobsCollection, where("jobId", "==", jobId));
+    const querySnapshot = await getDocs(q);
+
+    if (querySnapshot.empty) {
+      console.log(`No job found with jobId: ${jobId}`);
+      return null;
+    }
+
+    // Assuming jobId is unique, take the first document
+    const docSnap = querySnapshot.docs[0];
+    return docSnap;
+  } catch (error) {
+    console.error("Error finding job by jobId:", error);
+    throw error;
+  }
+};
+
+// ✅ Find and return job data by jobId
+export const findJobByJobId = async (jobId) => {
+  const jobDoc = await getJobDocByJobId(jobId);
+  if (!jobDoc) return null;
+  return { id: jobDoc.id, ...jobDoc.data() };
+};
+
+// ✅ Delete job by jobId
+export const deleteJobByJobId = async (jobId) => {
+  const jobDoc = await getJobDocByJobId(jobId);
+  if (!jobDoc) {
+    throw new Error(`Job with jobId ${jobId} not found.`);
+  }
+  await deleteDoc(doc(db, "jobs", jobDoc.id));
+  console.log(`Job with jobId ${jobId} deleted successfully.`);
+};
+
+
+// ✅ Update job by jobId
+export const updateJobByJobId = async (jobId, updatedData) => {
+  const jobDoc = await getJobDocByJobId(jobId);
+  if (!jobDoc) {
+    throw new Error(`Job with jobId ${jobId} not found.`);
+  }
+  await updateDoc(doc(db, "jobs", jobDoc.id), updatedData);
+  console.log(`Job with jobId ${jobId} updated successfully.`);
+};
+
+
+// ✅ Example method: get all jobs by jobFunction
+export const getJobsByFunction = async (jobFunction) => {
+  try {
+    const q = query(jobsCollection, where("jobFunction", "==", jobFunction));
+    const querySnapshot = await getDocs(q);
+
+    const jobs = querySnapshot.docs.map((docSnap) => ({
+      id: docSnap.id,
+      ...docSnap.data(),
+    }));
+
+    return jobs;
+  } catch (error) {
+    console.error("Error retrieving jobs by function:", error);
+    throw error;
+  }
+};
 
 

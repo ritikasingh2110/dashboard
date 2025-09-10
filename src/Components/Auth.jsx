@@ -12,6 +12,9 @@ export default function Auth({ type }) {
     password: ""
   });
 
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState({ text: "", type: "" }); // type: 'error' | 'success'
+
   const handleChange = (e) => {
     setFormData(prev => ({
       ...prev,
@@ -20,35 +23,38 @@ export default function Auth({ type }) {
   };
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
+    setMessage({ text: "", type: "" });
+    setLoading(true);
 
-  try {
-    if (!isLogin) {
-      await saveAdmin(formData);
-      alert("Admin registered! Please Signin Using Your Credentials");
-      navigate("/");
-    } else {
-      const admins = await getAllAdmins();
-      const match = admins.find(
-        (admin) =>
-          admin.email === formData.email &&
-          admin.password === formData.password
-      );
-
-      if (match) {
-        localStorage.setItem("adminId", match.email);
-
-        alert("Login successful!");
-        navigate("/dashboard");
+    try {
+      if (!isLogin) {
+        await saveAdmin(formData);
+        setMessage({ text: "Admin registered! Please sign in using your credentials.", type: "success" });
+        setTimeout(() => navigate("/"), 1500);
       } else {
-        alert("Invalid credentials");
+        const admins = await getAllAdmins();
+        const match = admins.find(
+          (admin) =>
+            admin.email === formData.email &&
+            admin.password === formData.password
+        );
+
+        if (match) {
+          localStorage.setItem("adminId", match.email);
+          setMessage({ text: "Login successful! Redirecting...", type: "success" });
+          setTimeout(() => navigate("/dashboard"), 1500);
+        } else {
+          setMessage({ text: "Invalid credentials. Please try again.", type: "error" });
+        }
       }
+    } catch (error) {
+      console.error(error);
+      setMessage({ text: "An error occurred. Please try again.", type: "error" });
+    } finally {
+      setLoading(false);
     }
-  } catch (error) {
-    console.error(error);
-    alert("Error during authentication");
-  }
-};
+  };
 
   return (
     <div className="min-h-screen flex">
@@ -69,6 +75,12 @@ export default function Auth({ type }) {
           <p className="font-[heebo] text-sm text-slate-500 text-center mb-6">
             {isLogin ? "Please sign in to continue" : "Sign up to get started"}
           </p>
+
+          {message.text && (
+            <div className={`mb-4 p-3 rounded ${message.type === "error" ? "bg-red-100 text-red-700" : "bg-green-100 text-green-700"}`}>
+              {message.text}
+            </div>
+          )}
 
           <form onSubmit={handleSubmit} className="space-y-5">
             {!isLogin && (
@@ -117,9 +129,10 @@ export default function Auth({ type }) {
 
             <button
               type="submit"
-              className="font-[heebo] w-full bg-[#726D7B] hover:bg-[#FBA504] text-white font-semibold py-3 rounded-lg transition"
+              disabled={loading}
+              className={`font-[heebo] w-full ${loading ? "bg-gray-400 cursor-not-allowed" : "bg-[#726D7B] hover:bg-[#FBA504]"} text-white font-semibold py-3 rounded-lg transition`}
             >
-              {isLogin ? "Login" : "Sign Up"}
+              {loading ? "Processing..." : isLogin ? "Login" : "Sign Up"}
             </button>
           </form>
 
