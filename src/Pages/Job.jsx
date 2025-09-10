@@ -3,11 +3,8 @@ import {
   FaTrash,
   FaEye,
   FaSignOutAlt,
-  FaUndo,
   FaSearch,
-  FaArrowRight,
   FaEdit,
-  FaTimes,
 } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { getAllJobs, deleteJobByJobId, updateJobByJobId } from "../firebase/helpers/firestoreHelpers"; // ✅ updated import
@@ -224,12 +221,12 @@ export default function Job() {
               ) : (
                 filteredJobs.map((job, index) => (
                   <tr key={job.id} className="border-b border-gray-200 hover:bg-gray-100 transition">
-                    <td className="py-3 px-4">{index + 1}</td>
-                    <td className="py-3 px-4">{job.title}</td>
-                    <td className="py-3 px-4">{job.count}</td>
+                    <td className="py-3 px-4 pl-8">{index + 1}</td>
+                    <td className="py-3 px-4 pl-8">{job.title}</td>
+                    <td className="py-3 px-4 pl-15">{job.count}</td>
                     <td className="py-3 px-4">
                       <button
-                        className="p-2 ml-14 rounded-lg hover:bg-slate-100 text-blue-600"
+                        className="p-2 ml-11 rounded-lg hover:bg-slate-100 text-blue-600"
                         title="View"
                         onClick={() => {
                           setSelectedJob(job);
@@ -278,7 +275,7 @@ export default function Job() {
                 .map(job => (
                   <div key={job.jobId} className="bg-white rounded-xl shadow-md border border-gray-200 p-6 relative">
                     <div className="flex justify-between items-center mb-4">
-                      <h4 className="text-lg font-semibold text-blue-700">Available Job : {job.jobId}</h4>
+                      <h4 className="text-lg font-semibold text-[#6222CC]">Available Job : {job.jobId}</h4>
                       <div className="flex gap-2">
                         <button onClick={() => handleEdit(job)} className="p-2 rounded-lg text-blue-600 hover:bg-blue-100 transition" title="Edit Job">
                           <FaEdit className="w-4 h-4" />
@@ -312,7 +309,7 @@ export default function Job() {
                           </button>
                           <button
                             type="submit"
-                            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
+                            className="px-4 py-2 bg-[#6222CC] text-white rounded-md hover:bg-[#FBA504] transition"
                           >
                             Save
                           </button>
@@ -362,9 +359,9 @@ export default function Job() {
       {showLogoutModal && (
         <div className="fixed inset-0 backdrop-blur-sm bg-black/40 flex items-center justify-center z-50 px-4">
           <div className="bg-white rounded-xl shadow-2xl w-full max-w-md p-6 space-y-4">
-            <h3 className="text-xl font-semibold text-gray-700">Confirm Logout</h3>
-            <p className="text-gray-600">Are you sure you want to log out?</p>
-            <div className="flex justify-end gap-4">
+            <h3 className="text-xl font-semibold text-gray-700 font-[poppins] ">Confirm Logout</h3>
+            <p className="text-gray-600 font-[heebo]">Are you sure you want to log out?</p>
+            <div className="flex justify-end gap-4 font-[jost]">
               <button
                 onClick={() => setShowLogoutModal(false)}
                 className="px-4 py-2 rounded-lg border border-gray-300 hover:bg-gray-100 text-gray-700 transition"
