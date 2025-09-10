@@ -3,8 +3,11 @@ import {
   FaTrash,
   FaEye,
   FaSignOutAlt,
+  FaUndo,
   FaSearch,
+  FaArrowRight,
   FaEdit,
+  FaTimes,
 } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { getAllJobs, deleteJobByJobId, updateJobByJobId } from "../firebase/helpers/firestoreHelpers"; // ✅ updated import
@@ -73,6 +76,10 @@ export default function Job() {
   };
 
   const goToNewPage = () => navigate("/dashboard");
+
+   const goToJob = () => {
+    navigate("/create-job");
+  };
 
   const handleDelete = async (jobId) => {
     if (!window.confirm("Are you sure you want to delete this job?")) return;
@@ -149,6 +156,15 @@ export default function Job() {
         >
           <span className="text-red-600">||</span>Admin dashboard
         </button>
+
+        <button
+       onClick={goToJob}
+       aria-label="Go to new page"
+       className="absolute top-20 right-7.5 flex items-center gap-2 bg-transparent text-[#FBA504] py-2.5 rounded-lg  transition font-medium"
+>
+       {/* <FaArrowRight /> */}
+       <span className="text-red-600">||</span>Post new Job 
+       </button>
 
         <div className="mb-10">
           <h1 className="text-[#6222CC] text-[42px] font-bold mb-4 leading-tight font-[jost]">
