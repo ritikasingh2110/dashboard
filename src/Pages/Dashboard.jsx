@@ -228,23 +228,7 @@ export default function Dashboard() {
           aria-label="Go to new page"
           className="absolute top-12 right-0 flex items-center gap-2 bg-transparent text-[#FBA504] py-2.5 rounded-lg  transition font-medium"
         >
-          <span className="text-red-600">||</span>Job Portal
-        </button>
-
-        <button
-          onClick={goToNewPage}
-          aria-label="Go to new page"
-          className="absolute top-12 right-0 flex items-center gap-2 bg-transparent text-[#FBA504] py-2.5 rounded-lg transition font-medium"
-        >
-          <span className="text-red-600">||</span>Job Portal
-        </button>
-
-        <button
-          onClick={goToNewPage}
-          aria-label="Go to new page"
-          className="absolute top-12 right-0 flex items-center gap-2 bg-transparent text-[#FBA504] py-2.5 rounded-lg transition font-medium"
-        >
-          <span className="text-red-600">||</span>Job Portal
+          <span className="text-red-600">||</span>Job Dashboard
         </button>
 
         {/* Title & Greeting */}
